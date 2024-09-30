@@ -7,32 +7,92 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen font-['Poppins']">
+<body class="min-h-screen flex flex-col">
     <nav class="bg-white shadow-lg">
-        <!-- ... (navigation content) ... -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <img class="h-8 w-auto" src="https://uxdt.nic.in/wp-content/uploads/2020/01/NE_Preview1.png?x69772" alt="UnityGovHub">
+                    <span class="ml-2 text-xl font-bold text-gray-800 hidden sm:inline">UnityGovHub</span>
+                </div>
+                <div class="flex items-center">
+                    <a href="index.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="department.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium hidden sm:inline">Departments</a>
+                    <a href="#" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium hidden sm:inline">Profile</a>
+                    <button onclick="signOut()" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Sign Out</button>
+                </div>
+            </div>
+        </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-6">Tickets</h1>
+    <main class="flex-grow container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 text-center">Ticket Management</h1>
         
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold mb-2">Create New Ticket</h2>
-            <input type="text" id="newTicketTitle" placeholder="Enter ticket title" class="p-2 border rounded">
-            <button onclick="createTicket()" class="bg-blue-500 text-white px-4 py-2 rounded">Create Ticket</button>
+        <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">Create New Ticket</h2>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <input type="text" id="newTicketTitle" placeholder="Enter ticket title" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <button onclick="createTicket()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105">
+                    <i class="fas fa-plus mr-2"></i>Create Ticket
+                </button>
+            </div>
         </div>
 
-        <div id="ticketList" class="space-y-4">
-            <!-- Tickets will be dynamically added here -->
+        <div class="mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">Open Tickets</h2>
+            <div id="ticketList" class="space-y-4">
+               
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-xl p-4 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">Ticket Statistics</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-blue-100 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-blue-800">Total Tickets</h3>
+                    <p class="text-3xl font-bold text-blue-600" id="totalTickets">0</p>
+                </div>
+                <div class="bg-green-100 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-green-800">Open Tickets</h3>
+                    <p class="text-3xl font-bold text-green-600" id="openTickets">0</p>
+                </div>
+                <div class="bg-yellow-100 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-yellow-800">Your Tickets</h3>
+                    <p class="text-3xl font-bold text-yellow-600" id="userTickets">0</p>
+                </div>
+            </div>
         </div>
     </main>
+
+    <footer class="bg-white shadow-lg mt-auto py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center text-center sm:text-left">
+                <div class="mb-4 sm:mb-0">
+                    <h3 class="text-xl font-bold text-blue-600">UnityGovHub</h3>
+                    <p class="mt-1 text-sm text-gray-600">Empowering urban development through collaboration</p>
+                </div>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6">
+                    <a href="#" class="text-sm text-gray-600 hover:text-blue-600 transition duration-300">Privacy Policy</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-blue-600 transition duration-300">Terms of Service</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-blue-600 transition duration-300">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-        // Initialize Firebase (use your config)
+        // Initialize Firebase 
         const firebaseConfig = {
             apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
             authDomain: "unity-19852.firebaseapp.com",
@@ -53,33 +113,52 @@
                 currentUser = user;
                 loadTickets();
             } else {
-                window.location.href = 'index.html'; // Redirect to login page
+                window.location.href = 'index.html'; 
             }
         });
 
+        // Update loadTickets function to update statistics
         async function loadTickets() {
             const ticketList = document.getElementById('ticketList');
-            ticketList.innerHTML = ''; // Clear existing tickets
+            ticketList.innerHTML = ''; 
 
             const ticketsRef = collection(db, "tickets");
-            const q = query(ticketsRef, where("status", "==", "open")); // Only query for open tickets
+            const q = query(ticketsRef, where("status", "==", "open")); 
             const querySnapshot = await getDocs(q);
+
+            let openTicketsCount = 0;
+            let userTicketsCount = 0;
 
             querySnapshot.forEach((doc) => {
                 const ticket = doc.data();
+                openTicketsCount++;
+                if (ticket.participants.includes(currentUser.uid)) {
+                    userTicketsCount++;
+                }
                 const ticketElement = document.createElement('div');
-                ticketElement.className = 'bg-white p-4 rounded shadow';
+                ticketElement.className = 'bg-white rounded-lg shadow-md p-4 sm:p-6 transition duration-300 hover:shadow-xl';
                 ticketElement.innerHTML = `
-                    <h3 class="text-lg font-semibold">${ticket.title}</h3>
-                    <p>Status: ${ticket.status}</p>
-                    <button onclick="joinTicket('${doc.id}')" class="bg-green-500 text-white px-3 py-1 rounded mt-2">Join</button>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                        <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-0">${ticket.title}</h3>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            ${ticket.status}
+                        </span>
+                    </div>
+                    <button onclick="joinTicket('${doc.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 transform hover:scale-105">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Join Ticket
+                    </button>
                 `;
                 ticketList.appendChild(ticketElement);
             });
 
             if (ticketList.children.length === 0) {
-                ticketList.innerHTML = '<p class="text-gray-500">No open tickets available.</p>';
+                ticketList.innerHTML = '<p class="text-center text-gray-500 text-lg">No open tickets available.</p>';
             }
+
+            // Update statistics
+            document.getElementById('totalTickets').textContent = openTicketsCount;
+            document.getElementById('openTickets').textContent = openTicketsCount;
+            document.getElementById('userTickets').textContent = userTicketsCount;
         }
 
         window.createTicket = async function() {
@@ -90,10 +169,10 @@
                         title: title,
                         status: "open",
                         participants: [currentUser.uid],
-                        createdAt: new Date() // Add creation timestamp
+                        createdAt: new Date() 
                     });
                     console.log("Ticket created with ID: ", docRef.id);
-                    // Redirect to forum.html with the new ticket ID
+                    
                     window.location.href = `forum.html?ticket=${docRef.id}`;
                 } catch (error) {
                     console.error("Error creating ticket:", error);
@@ -111,6 +190,15 @@
             } catch (error) {
                 console.error("Error joining ticket:", error);
             }
+        }
+
+       // sign out button
+        window.signOut = function() {
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Sign out error", error);
+            });
         }
     </script>
 </body>
