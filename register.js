@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
@@ -12,6 +13,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 export function initializeAuth() {
   console.log("initializeAuth function called");
@@ -360,4 +362,28 @@ console.log("register.js loaded");
 
 async function setUserType(userId, userType) {
   console.log(`Setting user type for ${userId} to ${userType}`);
+}
+
+// After successful sign-in or sign-up
+async function onAuthSuccess(user) {
+  updateAuthButtons(true);
+  closeAuthModal();
+  await loadUserTickets(user.uid);
+  redirectToTicketsList();
+}
+
+async function loadUserTickets(userId) {
+  const ticketsRef = collection(db, "tickets");
+  const q = query(ticketsRef, where("participants", "array-contains", userId), where("status", "==", "open"));
+  const querySnapshot = await getDocs(q);
+  const tickets = [];
+  querySnapshot.forEach((doc) => {
+    tickets.push({ id: doc.id, ...doc.data() });
+  });
+  // Store tickets in localStorage or state management system
+  localStorage.setItem('userTickets', JSON.stringify(tickets));
+}
+
+function redirectToTicketsList() {
+  window.location.href = 'tickets.html';
 }
