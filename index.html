@@ -42,6 +42,7 @@
                     <a href="#" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
                     <a href="#" id="departmentsLink" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" style="display: none;">Departments</a>
                     <a href="projects.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Projects</a>
+                    <a href="#" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Events</a>
                     <a href="#contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium scroll-smooth">Contact Us</a>
                     <button id="authButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300" style="display: none;">Sign In / Sign Up</button>
                     <button id="getStartedButton" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition duration-300" style="display: none;" onclick="window.location.href='department.html'">Get Started</button>
@@ -59,10 +60,11 @@
 
     <div id="mobile-menu" class="hidden fixed inset-0 z-40 bg-gray-800 bg-opacity-95 flex items-center justify-center">
         <div class="text-center w-full px-4">
-            <a href="#" class="block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Home</a>
-            <a href="#" id="mobileDepartmentsLink" class="block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" style="display: none;">Departments</a>
-            <a href="projects.html" class="block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Projects</a>
-            <a href="#contact" class="block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Contact Us</a>
+            <a href="#" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" data-target="top">Home</a>
+            <a href="#" id="mobileDepartmentsLink" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" style="display: none;">Departments</a>
+            <a href="projects.html" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Projects</a>
+            <a href="#" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" data-target="top">Events</a>
+            <a href="#contact" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Contact Us</a>
             <button id="mobileAuthButton" class="w-full bg-blue-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition duration-300 mb-3" style="display: none;">Sign In / Sign Up</button>
             <button id="mobileGetStartedButton" class="w-full bg-green-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-green-700 transition duration-300 mb-3" style="display: none;" onclick="window.location.href='department.html'">Get Started</button>
             <button id="mobileSignOutButton" class="w-full bg-red-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-red-700 transition duration-300 mb-3" style="display: none;">Sign Out</button>
@@ -185,7 +187,7 @@
                         <input type="password" id="password" placeholder="••••••••" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
                   </div>
-                  <div id="userTypeContainer">
+                  <div id="userTypeContainer" class="mb-4">
                       <!-- User type selection will be dynamically added here -->
                   </div>
                   <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Submit</button>
@@ -203,25 +205,42 @@
               const mobileMenu = document.getElementById('mobile-menu');
               const closeMobileMenu = document.getElementById('closeMobileMenu');
           
-              menuToggle.addEventListener('click', () => {
+              function hideMobileMenu() {
+                  mobileMenu.classList.remove('active');
+                  mobileMenu.classList.add('hidden');
+              }
+          
+              function showMobileMenu() {
                   mobileMenu.classList.add('active');
                   mobileMenu.classList.remove('hidden');
-              });
+              }
           
-              closeMobileMenu.addEventListener('click', () => {
-                  mobileMenu.classList.remove('active');
-                  setTimeout(() => {
-                      mobileMenu.classList.add('hidden');
-                  }, 300);
-              });
+              menuToggle.addEventListener('click', showMobileMenu);
+              closeMobileMenu.addEventListener('click', hideMobileMenu);
           
-              // Smooth scrolling for all links
-              document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                  anchor.addEventListener('click', function (e) {
+              // Handle clicks on mobile menu items
+              document.querySelectorAll('.mobile-link').forEach(link => {
+                  link.addEventListener('click', (e) => {
                       e.preventDefault();
-                      document.querySelector(this.getAttribute('href')).scrollIntoView({
-                          behavior: 'smooth'
-                      });
+                      hideMobileMenu();
+                  
+                      const target = link.getAttribute('data-target') || link.getAttribute('href');
+                  
+                      if (target === 'top' || target === '#') {
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                      } else if (target.startsWith('#')) {
+                          const targetElement = document.querySelector(target);
+                          if (targetElement) {
+                              setTimeout(() => {
+                                  targetElement.scrollIntoView({ behavior: 'smooth' });
+                              }, 300); // Delay scrolling to allow menu to close
+                          }
+                      } else {
+                          // For external links (like projects.html)
+                          setTimeout(() => {
+                              window.location.href = target;
+                          }, 300); // Delay navigation to allow menu to close
+                      }
                   });
               });
           });
