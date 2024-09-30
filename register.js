@@ -54,7 +54,7 @@ export function initializeAuth() {
   }
 
   function redirectToGetStarted() {
-    // Instead of redirecting, we'll show the Get Started button and hide the Sign In button
+    
     updateAuthButtons(true);
     closeAuthModal();
   }
@@ -342,7 +342,7 @@ export function initializeAuth() {
     }
   });
 
-  // Initially hide all buttons except loading
+  
   updateAuthButtons(false);
   const authButtons = document.querySelectorAll('#authButton, #mobileAuthButton, #heroAuthButton');
   const getStartedButtons = document.querySelectorAll('#getStartedButton, #mobileGetStartedButton, #heroGetStartedButton');
@@ -364,7 +364,7 @@ async function setUserType(userId, userType) {
   console.log(`Setting user type for ${userId} to ${userType}`);
 }
 
-// After successful sign-in or sign-up
+
 async function onAuthSuccess(user) {
   updateAuthButtons(true);
   closeAuthModal();
@@ -380,7 +380,7 @@ async function loadUserTickets(userId) {
   querySnapshot.forEach((doc) => {
     tickets.push({ id: doc.id, ...doc.data() });
   });
-  // Store tickets in localStorage or state management system
+  // Store tickets in firebase local storage
   localStorage.setItem('userTickets', JSON.stringify(tickets));
 }
 
