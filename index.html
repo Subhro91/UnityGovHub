@@ -41,11 +41,14 @@
                 <div class="hidden md:flex items-center space-x-4">
                     <a href="#" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
                     <a href="#" id="departmentsLink" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" style="display: none;">Departments</a>
+                    <a href="tickets.html" id="ticketsLink" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" style="display: none;">Tickets</a>
                     <a href="projects.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Projects</a>
                     <a href="#" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Events</a>
                     <a href="#contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium scroll-smooth">Contact Us</a>
                     <button id="authButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300" style="display: none;">Sign In / Sign Up</button>
                     <button id="getStartedButton" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition duration-300" style="display: none;" onclick="window.location.href='department.html'">Get Started</button>
+                    <!-- Add this new button for Tickets -->
+                    <button id="ticketsButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300" style="display: none;" onclick="window.location.href='tickets.html'">Tickets</button>
                     <button id="signOutButton" class="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition duration-300" style="display: none;">Sign Out</button>
                     <div id="loadingButton" class="bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium">Loading...</div>
                 </div>
@@ -62,11 +65,14 @@
         <div class="text-center w-full px-4">
             <a href="#" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" data-target="top">Home</a>
             <a href="#" id="mobileDepartmentsLink" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" style="display: none;">Departments</a>
+            <a href="tickets.html" id="mobileTicketsLink" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" style="display: none;">Tickets</a>
             <a href="projects.html" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Projects</a>
             <a href="#" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300" data-target="top">Events</a>
             <a href="#contact" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Contact Us</a>
             <button id="mobileAuthButton" class="w-full bg-blue-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition duration-300 mb-3" style="display: none;">Sign In / Sign Up</button>
             <button id="mobileGetStartedButton" class="w-full bg-green-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-green-700 transition duration-300 mb-3" style="display: none;" onclick="window.location.href='department.html'">Get Started</button>
+            <!-- Add this new button for Tickets in mobile menu -->
+            <button id="mobileTicketsButton" class="w-full bg-blue-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition duration-300 mb-3" style="display: none;" onclick="window.location.href='tickets.html'">Tickets</button>
             <button id="mobileSignOutButton" class="w-full bg-red-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-red-700 transition duration-300 mb-3" style="display: none;">Sign Out</button>
             <div id="mobileLoadingButton" class="w-full bg-gray-400 text-white px-4 py-3 rounded-md text-lg font-medium mb-3">Loading...</div>
             <button id="closeMobileMenu" class="mt-4 text-white hover:text-gray-300 transition duration-300">
@@ -200,6 +206,17 @@
           </div>
           
           <script>
+          // Initialize Firebase
+          const firebaseConfig = {
+              apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
+              authDomain: "unity-19852.firebaseapp.com",
+              projectId: "unity-19852",
+              storageBucket: "unity-19852.appspot.com",
+              messagingSenderId: "345194493851",
+              appId: "1:345194493851:web:e144902274a7dda622933e"
+          };
+          firebase.initializeApp(firebaseConfig);
+
           document.addEventListener('DOMContentLoaded', () => {
               const menuToggle = document.getElementById('menu-toggle');
               const mobileMenu = document.getElementById('mobile-menu');
@@ -233,63 +250,120 @@
                           if (targetElement) {
                               setTimeout(() => {
                                   targetElement.scrollIntoView({ behavior: 'smooth' });
-                              }, 300); // Delay scrolling to allow menu to close
+                              }, 300);
                           }
                       } else {
-                          // For external links (like projects.html)
                           setTimeout(() => {
                               window.location.href = target;
-                          }, 300); // Delay navigation to allow menu to close
+                          }, 300);
                       }
                   });
               });
-          });
-          </script>
-          <script>
-          function updateAuthButtons(isSignedIn) {
-              const authButtons = document.querySelectorAll('#authButton, #mobileAuthButton, #heroAuthButton');
-              const getStartedButtons = document.querySelectorAll('#getStartedButton, #mobileGetStartedButton, #heroGetStartedButton');
-              const signOutButtons = document.querySelectorAll('#signOutButton, #mobileSignOutButton');
-          
-              authButtons.forEach(button => button.style.display = isSignedIn ? 'none' : 'inline-block');
-              getStartedButtons.forEach(button => {
-                  button.style.display = isSignedIn ? 'inline-block' : 'none';
-                  button.onclick = () => window.location.href = 'department.html';
-              });
-              signOutButtons.forEach(button => button.style.display = isSignedIn ? 'inline-block' : 'none');
-          }
-          
-          // Call this function after successful sign-in
-          function onSignIn() {
-              updateAuthButtons(true);
-          }
-          
-          // Call this function after sign-out
-          function onSignOut() {
-              updateAuthButtons(false);
-          }
-          
-          // Example usage in your existing auth code
-          firebase.auth().onAuthStateChanged((user) => {
-              if (user) {
-                  onSignIn();
-              } else {
-                  onSignOut();
-              }
-          });
-          </script>
-          <script>
-          document.addEventListener('DOMContentLoaded', () => {
+
+              // Auth-related code
               const closeModalButton = document.getElementById('closeModal');
               const authModal = document.getElementById('authModal');
-          
+
               if (closeModalButton && authModal) {
                   closeModalButton.addEventListener('click', () => {
                       authModal.classList.add('hidden');
                   });
               }
-          
-              // ... existing code ...
+
+              function updateAuthButtons(isSignedIn) {
+                  const authButtons = document.querySelectorAll('#authButton, #mobileAuthButton, #heroAuthButton');
+                  const getStartedButtons = document.querySelectorAll('#getStartedButton, #mobileGetStartedButton, #heroGetStartedButton');
+                  const signOutButtons = document.querySelectorAll('#signOutButton, #mobileSignOutButton');
+                  const departmentLinks = document.querySelectorAll('#departmentsLink, #mobileDepartmentsLink');
+                  const ticketsButtons = document.querySelectorAll('#ticketsButton, #mobileTicketsButton');
+
+                  authButtons.forEach(button => button.style.display = isSignedIn ? 'none' : 'inline-block');
+                  getStartedButtons.forEach(button => button.style.display = isSignedIn ? 'inline-block' : 'none');
+                  signOutButtons.forEach(button => button.style.display = isSignedIn ? 'inline-block' : 'none');
+                  departmentLinks.forEach(link => link.style.display = isSignedIn ? 'inline-block' : 'none');
+                  ticketsButtons.forEach(button => button.style.display = isSignedIn ? 'inline-block' : 'none');
+              }
+
+              function onSignIn() {
+                  updateAuthButtons(true);
+              }
+
+              function onSignOut() {
+                  updateAuthButtons(false);
+              }
+
+              firebase.auth().onAuthStateChanged((user) => {
+                  if (user) {
+                      onSignIn();
+                  } else {
+                      onSignOut();
+                  }
+              });
+
+              // Add event listeners for auth buttons
+              document.querySelectorAll('#authButton, #mobileAuthButton, #heroAuthButton').forEach(button => {
+                  button.addEventListener('click', () => {
+                      authModal.classList.remove('hidden');
+                  });
+              });
+
+              document.querySelectorAll('#signOutButton, #mobileSignOutButton').forEach(button => {
+                  button.addEventListener('click', () => {
+                      firebase.auth().signOut().then(() => {
+                          console.log('User signed out');
+                      }).catch((error) => {
+                          console.error('Sign out error', error);
+                      });
+                  });
+              });
+
+              // Handle auth form submission
+              const authForm = document.getElementById('authForm');
+              authForm.addEventListener('submit', (e) => {
+                  e.preventDefault();
+                  const email = document.getElementById('email').value;
+                  const password = document.getElementById('password').value;
+                  const isSignUp = document.getElementById('modalTitle').textContent === 'Sign Up';
+
+                  if (isSignUp) {
+                      firebase.auth().createUserWithEmailAndPassword(email, password)
+                          .then((userCredential) => {
+                              console.log('User signed up:', userCredential.user);
+                              authModal.classList.add('hidden');
+                          })
+                          .catch((error) => {
+                              console.error('Sign up error:', error);
+                              alert(error.message);
+                          });
+                  } else {
+                      firebase.auth().signInWithEmailAndPassword(email, password)
+                          .then((userCredential) => {
+                              console.log('User signed in:', userCredential.user);
+                              authModal.classList.add('hidden');
+                          })
+                          .catch((error) => {
+                              console.error('Sign in error:', error);
+                              alert(error.message);
+                          });
+                  }
+              });
+
+              // Switch between Sign In and Sign Up
+              const switchLink = document.getElementById('switchLink');
+              switchLink.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  const modalTitle = document.getElementById('modalTitle');
+                  const switchText = document.getElementById('switchText');
+                  if (modalTitle.textContent === 'Sign In') {
+                      modalTitle.textContent = 'Sign Up';
+                      switchText.textContent = 'Already have an account?';
+                      switchLink.textContent = 'Sign In';
+                  } else {
+                      modalTitle.textContent = 'Sign In';
+                      switchText.textContent = 'Don\'t have an account?';
+                      switchLink.textContent = 'Sign Up';
+                  }
+              });
           });
           </script>
           </body>
