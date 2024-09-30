@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnityGovHub - Department Chat Forum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .chat-container {
+            height: calc(100vh - 16rem);
+        }
+        .message-container {
+            height: calc(100% - 4rem);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #E2E8F0;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #CBD5E0;
+            border-radius: 20px;
+        }
+        .ticket-closed-message {
+            background-color: #f3f4f6;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-weight: bold;
+            text-align: center;
+            color: #4b5563;
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 640px) {
+            .chat-container {
+                height: calc(100vh - 12rem);
+            }
+            .message-container {
+                height: calc(100% - 3rem);
+            }
+            #messages {
+                font-size: 0.875rem;
+            }
+            #messageInput {
+                font-size: 0.875rem;
+            }
+            #sendButton {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <img class="h-8 w-auto" src="https://uxdt.nic.in/wp-content/uploads/2020/01/NE_Preview1.png?x69772" alt="UnityGovHub">
+                        <span class="ml-2 text-xl font-bold text-gray-800 hidden sm:inline">UnityGovHub</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <a href="index.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-2 sm:px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="projects.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-2 sm:px-3 py-2 rounded-md text-sm font-medium">Projects</a>
+                    <button id="closeTicketBtn" class="bg-red-500 text-white px-2 sm:px-3 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition-colors">Close</button>
+                    <button id="concludeBtn" class="hidden bg-green-500 text-white px-2 sm:px-3 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors">Conclude</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+        <div class="sm:px-0">
+            <h1 id="ticketTitle" class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Department Chat Forum</h1>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Chat Area -->
+                <div class="lg:col-span-3 bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6 chat-container">
+                    <div id="messages" class="message-container space-y-3 sm:space-y-4 mb-3 sm:mb-4 overflow-y-auto p-2 custom-scrollbar"></div>
+                    <div id="messageInputArea" class="flex space-x-2 bg-gray-100 p-2 rounded-lg">
+                        <input type="text" id="messageInput" class="flex-grow p-2 bg-white border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Type your message...">
+                        <button id="sendButton" onclick="sendMessage()" class="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                            <i class="fas fa-paper-plane mr-1 sm:mr-2"></i><span class="hidden sm:inline">Send</span>
+                        </button>
+                    </div>
+                    <div id="ticketClosedMessage" class="hidden ticket-closed-message mt-2">
+                        This ticket has been closed.
+                    </div>
+                </div>
+
+                <!-- Calendar -->
+                <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6">
+                    <h2 class="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-gray-800">Schedule Event</h2>
+                    <div class="mb-3 sm:mb-4">
+                        <button id="openCalendarBtn" class="w-full bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+                            <i class="fas fa-calendar-alt mr-1 sm:mr-2"></i>Select Date
+                        </button>
+                        <input type="text" id="selectedDate" class="w-full mt-2 p-2 bg-gray-100 border border-gray-300 text-gray-700 rounded-lg" readonly placeholder="No date selected">
+                    </div>
+                    <input type="text" id="eventName" class="w-full p-2 mb-3 sm:mb-4 bg-white border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Event Name">
+                    <div class="mb-3 sm:mb-4">
+                        <select id="eventColor" class="w-full p-2 bg-white border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option value="bg-blue-200">Blue</option>
+                            <option value="bg-green-200">Green</option>
+                            <option value="bg-red-200">Red</option>
+                            <option value="bg-yellow-200">Yellow</option>
+                            <option value="bg-purple-200">Purple</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 sm:mb-4">
+                        <select id="eventRecurrence" class="w-full p-2 bg-white border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option value="none">No recurrence</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <button onclick="scheduleEvent()" class="w-full bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                        <i class="fas fa-calendar-plus mr-1 sm:mr-2"></i>Schedule Event
+                    </button>
+                    <div id="scheduledEvents" class="mt-4 sm:mt-6 space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white shadow-lg mt-8">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 text-sm">
+                © 2023 UnityGovHub. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        let isTicketClosed = false;
+        let hasConclusion = false;
+
+        function addMessage(user, text, avatar) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = `${user === 'You' ? 'ml-auto bg-blue-100' : 'mr-auto bg-gray-100'} p-4 rounded-lg shadow-md max-w-[80%] break-words flex items-start space-x-3`;
+            messageElement.innerHTML = `
+                <span class="text-2xl">${avatar}</span>
+                <div>
+                    <strong class="block text-sm text-gray-600">${user}</strong>
+                    <span class="text-gray-700">${text}</span>
+                </div>
+            `;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function addScheduledEvent(date, eventName, eventColor, recurrence) {
+            const eventsDiv = document.getElementById('scheduledEvents');
+            const eventElement = document.createElement('div');
+            eventElement.className = `${eventColor} p-3 rounded-lg text-sm flex justify-between items-center mb-2`;
+            
+            const eventDate = dayjs(date);
+            const now = dayjs();
+            const daysUntil = eventDate.diff(now, 'day');
+            
+            let recurrenceText = '';
+            if (recurrence !== 'none') {
+                recurrenceText = ` (${recurrence})`;
+            }
+
+            eventElement.innerHTML = `
+                <div>
+                    <span class="font-bold">${eventName}${recurrenceText}</span><br>
+                    <span>${date}</span><br>
+                    <span class="countdown" data-date="${date}">In ${daysUntil} days</span>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-600 transition-colors">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            `;
+            eventsDiv.appendChild(eventElement);
+            updateCountdowns();
+        }
+
+        function setTicketTitle(title) {
+            document.getElementById('ticketTitle').textContent = title;
+        }
+
+        function closeTicket() {
+            if (confirm('Are you sure you want to close this ticket?')) {
+                isTicketClosed = true;
+                document.getElementById('messageInputArea').classList.add('hidden');
+                document.getElementById('ticketClosedMessage').classList.remove('hidden');
+                document.getElementById('closeTicketBtn').classList.add('hidden');
+                document.getElementById('concludeBtn').classList.remove('hidden');
+                addMessage('System', 'This ticket has been closed.', '🔒');
+            }
+        }
+
+        function concludeTicket() {
+            if (!hasConclusion) {
+                const conclusion = prompt('Please enter your concluding message:');
+                if (conclusion) {
+                    addMessage('Conclusion', conclusion, '📝');
+                    hasConclusion = true;
+                    document.getElementById('concludeBtn').classList.add('hidden');
+                }
+            }
+        }
+
+        function sendMessage() {
+            if (isTicketClosed) return;
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            if (message) {
+                addMessage('You', message, '👤');
+                messageInput.value = '';
+            }
+        }
+
+        document.getElementById('closeTicketBtn').addEventListener('click', closeTicket);
+        document.getElementById('concludeBtn').addEventListener('click', concludeTicket);
+
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isTicketClosed) {
+                sendMessage();
+            }
+        });
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ticketName = urlParams.get('ticket');
+            if (ticketName) {
+                setTicketTitle(ticketName);
+            }
+
+            // Existing onload code
+            addMessage('Subhrajyoti', 'Hello everyone! Shall we start our discussion?', '👩‍💼');
+            setTimeout(() => addMessage('Aritwa', 'Hi Subhrajyoti! Yes, let\'s begin.', '👨‍💼'), 1000);
+            setTimeout(() => addMessage('Soumen', 'I have some ideas to share about our upcoming project.', '👩‍🔬'), 2000);
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
+    <script>
+        let calendar;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const openCalendarBtn = document.getElementById('openCalendarBtn');
+            const selectedDateInput = document.getElementById('selectedDate');
+
+            calendar = flatpickr(selectedDateInput, {
+                dateFormat: "Y-m-d",
+                static: true,
+                onClose: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        selectedDateInput.value = dateStr;
+                        document.getElementById('eventName').focus();
+                    }
+                }
+            });
+
+            openCalendarBtn.addEventListener('click', function() {
+                calendar.open();
+            });
+        });
+
+        function scheduleEvent() {
+            const date = document.getElementById('selectedDate').value;
+            const eventName = document.getElementById('eventName').value;
+            const eventColor = document.getElementById('eventColor').value;
+            const eventRecurrence = document.getElementById('eventRecurrence').value;
+            if (date && eventName) {
+                addScheduledEvent(date, eventName, eventColor, eventRecurrence);
+                document.getElementById('eventName').value = '';
+                document.getElementById('selectedDate').value = '';
+            } else {
+                alert('Please select a date and enter an event name.');
+            }
+        }
+
+        function updateCountdowns() {
+            const countdowns = document.querySelectorAll('.countdown');
+            countdowns.forEach(countdown => {
+                const eventDate = dayjs(countdown.dataset.date);
+                const now = dayjs();
+                const daysUntil = eventDate.diff(now, 'day');
+                countdown.textContent = `In ${daysUntil} days`;
+            });
+        }
+
+        setInterval(updateCountdowns, 60000); // Update countdowns every minute
+    </script>
+</body>
+</html>
