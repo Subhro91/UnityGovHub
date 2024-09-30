@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+        .chat-container {
+            height: calc(100vh - 2rem);
+        }
+        .message-container {
+            height: calc(100% - 8rem);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #2D3748;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #4A5568;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen p-4">
+    <div class="max-w-2xl mx-auto bg-gray-800 rounded-xl shadow-2xl p-4 md:p-6 chat-container">
+        <h1 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-white text-center">Customer Support</h1>
+        
+        <div id="supportMessages" class="message-container space-y-4 mb-4 overflow-y-auto p-2 custom-scrollbar"></div>
+        
+        <div class="flex space-x-2 bg-gray-700 p-2 rounded-lg">
+            <input type="text" id="supportInput" class="flex-grow p-2 md:p-3 bg-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Type your message...">
+            <button onclick="sendSupportMessage()" class="bg-blue-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                <i class="fas fa-paper-plane mr-2 hidden md:inline"></i>Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+       
+    </script>
+</body>
+</html>
