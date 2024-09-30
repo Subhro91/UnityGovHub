@@ -76,10 +76,10 @@
         <!-- Schedule Work Section -->
         <div class="mb-16 text-center">
             <h2 class="text-3xl font-bold text-gray-900 mb-8">Schedule Your Work</h2>
-            <button id="scheduleBtn" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
+            <a href="tickets.html" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
                 Schedule Your Work Now
                 <i class="fas fa-plus ml-2"></i>
-            </button>
+            </a>
         </div>
 
         <!-- Contact Us Section -->
@@ -119,52 +119,5 @@
             </div>
         </div>
     </footer>
-
-    <!-- Ticket Modal -->
-    <div id="ticketModal" class="modal">
-        <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-4">Create a New Ticket</h2>
-            <form id="ticketForm">
-                <div class="mb-4">
-                    <label for="ticketName" class="block text-gray-700 text-sm font-bold mb-2">Ticket Name:</label>
-                    <input type="text" id="ticketName" name="ticketName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                </div>
-                <div class="flex justify-between">
-                    <button type="button" id="cancelTicket" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Cancel</button>
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create Ticket</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-      const modal = document.getElementById('ticketModal');
-      const scheduleBtn = document.getElementById('scheduleBtn');
-      const cancelBtn = document.getElementById('cancelTicket');
-      const ticketForm = document.getElementById('ticketForm');
-  
-      scheduleBtn.onclick = function() {
-          modal.style.display = "block";
-      }
-  
-      cancelBtn.onclick = function() {
-          modal.style.display = "none";
-      }
-  
-      window.onclick = function(event) {
-          if (event.target == modal) {
-              modal.style.display = "none";
-          }
-      }
-  
-      ticketForm.onsubmit = function(e) {
-          e.preventDefault();
-          const ticketName = document.getElementById('ticketName').value;
-          if (confirm(`Are you sure you want to create a ticket named "${ticketName}"?`)) {
-              // Redirect to forum.html with the ticket name
-              window.location.href = `forum.html?ticket=${encodeURIComponent(ticketName)}`;
-          }
-      }
-  </script>
 </body>
 </html>
