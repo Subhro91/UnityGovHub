@@ -88,7 +88,7 @@
                     <div id="messages" class="message-container space-y-3 sm:space-y-4 mb-3 sm:mb-4 overflow-y-auto p-2 custom-scrollbar"></div>
                     <div id="messageInputArea" class="flex space-x-2 bg-gray-100 p-2 rounded-lg">
                         <input type="text" id="messageInput" class="flex-grow p-2 bg-white border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Type your message...">
-                        <button id="sendButton" onclick="sendMessage()" class="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                        <button id="sendButton" onclick="window.sendMessage()" class="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                             <i class="fas fa-paper-plane mr-1 sm:mr-2"></i><span class="hidden sm:inline">Send</span>
                         </button>
                     </div>
@@ -141,14 +141,119 @@
         </div>
     </footer>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
+  authDomain: "unity-19852.firebaseapp.com",
+  projectId: "unity-19852",
+  storageBucket: "unity-19852.appspot.com",
+  messagingSenderId: "345194493851",
+  appId: "1:345194493851:web:e144902274a7dda622933e"
+};
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser;
+        let currentTicketId;
         let isTicketClosed = false;
+        let messagesLoaded = false; // Add this flag
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadTicket();
+                if (!messagesLoaded) { // Only load messages if they haven't been loaded yet
+                    loadMessages();
+                    messagesLoaded = true;
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        async function loadTicket() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentTicketId = urlParams.get('ticket');
+            if (currentTicketId) {
+                const ticketRef = doc(db, "tickets", currentTicketId);
+                const ticketSnap = await getDoc(ticketRef);
+                if (ticketSnap.exists()) {
+                    const ticketData = ticketSnap.data();
+                    if (ticketData.participants.includes(currentUser.uid)) {
+                        setTicketTitle(ticketData.title);
+                        // Remove the loadMessages() call from here
+                    } else {
+                        alert("You are not a participant of this ticket.");
+                        window.location.href = 'tickets.html';
+                    }
+                } else {
+                    console.error("Ticket not found");
+                    window.location.href = 'tickets.html';
+                }
+            }
+        }
+
+        function loadMessages() {
+            console.log("Loading messages for ticket:", currentTicketId);
+            const messagesRef = collection(db, "tickets", currentTicketId, "messages");
+            const q = query(messagesRef, orderBy("timestamp"));
+            
+            onSnapshot(q, (snapshot) => {
+                console.log("Received snapshot, document changes:", snapshot.docChanges().length);
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const message = change.doc.data();
+                        console.log("New message:", message);
+                        addMessage(message.user, message.text, message.avatar);
+                    }
+                });
+            }, (error) => {
+                console.error("Error fetching messages:", error);
+            });
+        }
+
+        async function sendMessage() {
+            if (isTicketClosed) return;
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            if (message) {
+                try {
+                    console.log("Sending message for ticket:", currentTicketId);
+                    const messagesRef = collection(db, "tickets", currentTicketId, "messages");
+                    const newMessage = {
+                        user: currentUser.displayName || currentUser.email,
+                        text: message,
+                        avatar: '👤', // You might want to store this in user profile
+                        timestamp: new Date()
+                    };
+                    console.log("New message object:", newMessage);
+                    await addDoc(messagesRef, newMessage);
+                    console.log("Message sent successfully");
+                    messageInput.value = '';
+                } catch (error) {
+                    console.error("Error sending message:", error);
+                }
+            }
+        }
+
+        // Make sendMessage globally accessible
+        window.sendMessage = sendMessage;
+
         let hasConclusion = false;
 
         function addMessage(user, text, avatar) {
+            console.log("Adding message to UI:", { user, text, avatar });
             const messagesDiv = document.getElementById('messages');
             const messageElement = document.createElement('div');
-            messageElement.className = `${user === 'You' ? 'ml-auto bg-blue-100' : 'mr-auto bg-gray-100'} p-4 rounded-lg shadow-md max-w-[80%] break-words flex items-start space-x-3`;
+            messageElement.className = `${user === currentUser.displayName || user === currentUser.email ? 'ml-auto bg-blue-100' : 'mr-auto bg-gray-100'} p-4 rounded-lg shadow-md max-w-[80%] break-words flex items-start space-x-3 mb-4`;
             messageElement.innerHTML = `
                 <span class="text-2xl">${avatar}</span>
                 <div>
@@ -192,8 +297,13 @@
             document.getElementById('ticketTitle').textContent = title;
         }
 
-        function closeTicket() {
+        async function closeTicket() {
             if (confirm('Are you sure you want to close this ticket?')) {
+                const ticketRef = doc(db, "tickets", currentTicketId);
+                await updateDoc(ticketRef, {
+                    status: "closed",
+                    closedAt: new Date()
+                });
                 isTicketClosed = true;
                 document.getElementById('messageInputArea').classList.add('hidden');
                 document.getElementById('ticketClosedMessage').classList.remove('hidden');
@@ -214,16 +324,6 @@
             }
         }
 
-        function sendMessage() {
-            if (isTicketClosed) return;
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
-            if (message) {
-                addMessage('You', message, '👤');
-                messageInput.value = '';
-            }
-        }
-
         document.getElementById('closeTicketBtn').addEventListener('click', closeTicket);
         document.getElementById('concludeBtn').addEventListener('click', concludeTicket);
 
@@ -239,11 +339,6 @@
             if (ticketName) {
                 setTicketTitle(ticketName);
             }
-
-            // Existing onload code
-            addMessage('Subhrajyoti', 'Hello everyone! Shall we start our discussion?', '👩‍💼');
-            setTimeout(() => addMessage('Aritwa', 'Hi Subhrajyoti! Yes, let\'s begin.', '👨‍💼'), 1000);
-            setTimeout(() => addMessage('Soumen', 'I have some ideas to share about our upcoming project.', '👩‍🔬'), 2000);
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
