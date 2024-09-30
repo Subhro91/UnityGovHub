@@ -146,7 +146,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
+        
         const firebaseConfig = {
   apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
   authDomain: "unity-19852.firebaseapp.com",
@@ -156,7 +156,7 @@
   appId: "1:345194493851:web:e144902274a7dda622933e"
 };
 
-        // Initialize Firebase
+       
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -164,7 +164,7 @@
         let currentUser;
         let currentTicketId;
         let isTicketClosed = false;
-        let messagesLoaded = false; // Add this flag
+        let messagesLoaded = false; 
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -189,7 +189,7 @@
                     const ticketData = ticketSnap.data();
                     if (ticketData.participants.includes(currentUser.uid)) {
                         setTicketTitle(ticketData.title);
-                        // Remove the loadMessages() call from here
+                        //  loadMessages() call removed
                     } else {
                         alert("You are not a participant of this ticket.");
                         window.location.href = 'tickets.html';
@@ -231,7 +231,7 @@
                     const newMessage = {
                         user: currentUser.displayName || currentUser.email,
                         text: message,
-                        avatar: '👤', // You might want to store this in user profile
+                        avatar: '👤', 
                         timestamp: new Date()
                     };
                     console.log("New message object:", newMessage);
@@ -244,7 +244,7 @@
             }
         }
 
-        // Make sendMessage globally accessible
+        //sendMessage globally accessible
         window.sendMessage = sendMessage;
 
         let hasConclusion = false;
@@ -391,7 +391,7 @@
             });
         }
 
-        setInterval(updateCountdowns, 60000); // Update countdowns every minute
+        setInterval(updateCountdowns, 60000); 
     </script>
 </body>
 </html>
