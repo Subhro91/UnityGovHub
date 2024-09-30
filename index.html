@@ -47,7 +47,7 @@
                     <a href="#contact" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium scroll-smooth">Contact Us</a>
                     <button id="authButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300" style="display: none;">Sign In / Sign Up</button>
                     <button id="getStartedButton" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition duration-300" style="display: none;" onclick="window.location.href='department.html'">Get Started</button>
-                    <!-- Add this new button for Tickets -->
+                    <!--Tickets -->
                     <button id="ticketsButton" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition duration-300" style="display: none;" onclick="window.location.href='tickets.html'">Tickets</button>
                     <button id="signOutButton" class="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition duration-300" style="display: none;">Sign Out</button>
                     <div id="loadingButton" class="bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium">Loading...</div>
@@ -71,7 +71,7 @@
             <a href="#contact" class="mobile-link block text-white hover:bg-blue-600 px-4 py-3 rounded-md text-lg font-medium mb-3 transition duration-300">Contact Us</a>
             <button id="mobileAuthButton" class="w-full bg-blue-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition duration-300 mb-3" style="display: none;">Sign In / Sign Up</button>
             <button id="mobileGetStartedButton" class="w-full bg-green-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-green-700 transition duration-300 mb-3" style="display: none;" onclick="window.location.href='department.html'">Get Started</button>
-            <!-- Add this new button for Tickets in mobile menu -->
+           
             <button id="mobileTicketsButton" class="w-full bg-blue-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition duration-300 mb-3" style="display: none;" onclick="window.location.href='tickets.html'">Tickets</button>
             <button id="mobileSignOutButton" class="w-full bg-red-600 text-white px-4 py-3 rounded-md text-lg font-medium hover:bg-red-700 transition duration-300 mb-3" style="display: none;">Sign Out</button>
             <div id="mobileLoadingButton" class="w-full bg-gray-400 text-white px-4 py-3 rounded-md text-lg font-medium mb-3">Loading...</div>
@@ -194,7 +194,7 @@
                     </div>
                   </div>
                   <div id="userTypeContainer" class="mb-4">
-                      <!-- User type selection will be dynamically added here -->
+                      
                   </div>
                   <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Submit</button>
               </form>
@@ -235,7 +235,7 @@
               menuToggle.addEventListener('click', showMobileMenu);
               closeMobileMenu.addEventListener('click', hideMobileMenu);
           
-              // Handle clicks on mobile menu items
+              // clicks on mobile menu items
               document.querySelectorAll('.mobile-link').forEach(link => {
                   link.addEventListener('click', (e) => {
                       e.preventDefault();
@@ -260,7 +260,7 @@
                   });
               });
 
-              // Auth-related code
+              // Auth
               const closeModalButton = document.getElementById('closeModal');
               const authModal = document.getElementById('authModal');
 
@@ -300,7 +300,7 @@
                   }
               });
 
-              // Add event listeners for auth buttons
+              // event listeners for auth buttons
               document.querySelectorAll('#authButton, #mobileAuthButton, #heroAuthButton').forEach(button => {
                   button.addEventListener('click', () => {
                       authModal.classList.remove('hidden');
@@ -317,7 +317,7 @@
                   });
               });
 
-              // Handle auth form submission
+              // Handling auth form submission
               const authForm = document.getElementById('authForm');
               authForm.addEventListener('submit', (e) => {
                   e.preventDefault();
