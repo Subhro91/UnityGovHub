@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnityGovHub - Tickets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen font-['Poppins']">
+    <nav class="bg-white shadow-lg">
+        <!-- ... (navigation content) ... -->
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Tickets</h1>
+        
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">Create New Ticket</h2>
+            <input type="text" id="newTicketTitle" placeholder="Enter ticket title" class="p-2 border rounded">
+            <button onclick="createTicket()" class="bg-blue-500 text-white px-4 py-2 rounded">Create Ticket</button>
+        </div>
+
+        <div id="ticketList" class="space-y-4">
+            <!-- Tickets will be dynamically added here -->
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+        // Initialize Firebase (use your config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
+            authDomain: "unity-19852.firebaseapp.com",
+            projectId: "unity-19852",
+            storageBucket: "unity-19852.appspot.com",
+            messagingSenderId: "345194493851",
+            appId: "1:345194493851:web:e144902274a7dda622933e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadTickets();
+            } else {
+                window.location.href = 'index.html'; // Redirect to login page
+            }
+        });
+
+        async function loadTickets() {
+            const ticketList = document.getElementById('ticketList');
+            ticketList.innerHTML = ''; // Clear existing tickets
+
+            const ticketsRef = collection(db, "tickets");
+            const q = query(ticketsRef, where("status", "==", "open")); // Only query for open tickets
+            const querySnapshot = await getDocs(q);
+
+            querySnapshot.forEach((doc) => {
+                const ticket = doc.data();
+                const ticketElement = document.createElement('div');
+                ticketElement.className = 'bg-white p-4 rounded shadow';
+                ticketElement.innerHTML = `
+                    <h3 class="text-lg font-semibold">${ticket.title}</h3>
+                    <p>Status: ${ticket.status}</p>
+                    <button onclick="joinTicket('${doc.id}')" class="bg-green-500 text-white px-3 py-1 rounded mt-2">Join</button>
+                `;
+                ticketList.appendChild(ticketElement);
+            });
+
+            if (ticketList.children.length === 0) {
+                ticketList.innerHTML = '<p class="text-gray-500">No open tickets available.</p>';
+            }
+        }
+
+        window.createTicket = async function() {
+            const title = document.getElementById('newTicketTitle').value;
+            if (title) {
+                try {
+                    const docRef = await addDoc(collection(db, "tickets"), {
+                        title: title,
+                        status: "open",
+                        participants: [currentUser.uid],
+                        createdAt: new Date() // Add creation timestamp
+                    });
+                    console.log("Ticket created with ID: ", docRef.id);
+                    // Redirect to forum.html with the new ticket ID
+                    window.location.href = `forum.html?ticket=${docRef.id}`;
+                } catch (error) {
+                    console.error("Error creating ticket:", error);
+                }
+            }
+        }
+
+        window.joinTicket = async function(ticketId) {
+            try {
+                const ticketRef = doc(db, "tickets", ticketId);
+                await updateDoc(ticketRef, {
+                    participants: arrayUnion(currentUser.uid)
+                });
+                window.location.href = `forum.html?ticket=${ticketId}`;
+            } catch (error) {
+                console.error("Error joining ticket:", error);
+            }
+        }
+    </script>
+</body>
+</html>
