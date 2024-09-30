@@ -146,17 +146,15 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-        
         const firebaseConfig = {
-  apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
-  authDomain: "unity-19852.firebaseapp.com",
-  projectId: "unity-19852",
-  storageBucket: "unity-19852.appspot.com",
-  messagingSenderId: "345194493851",
-  appId: "1:345194493851:web:e144902274a7dda622933e"
-};
+            apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
+            authDomain: "unity-19852.firebaseapp.com",
+            projectId: "unity-19852",
+            storageBucket: "unity-19852.appspot.com",
+            messagingSenderId: "345194493851",
+            appId: "1:345194493851:web:e144902274a7dda622933e"
+        };
 
-       
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -164,13 +162,13 @@
         let currentUser;
         let currentTicketId;
         let isTicketClosed = false;
-        let messagesLoaded = false; 
+        let messagesLoaded = false;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
                 await loadTicket();
-                if (!messagesLoaded) { // Only load messages if they haven't been loaded yet
+                if (!messagesLoaded) {
                     loadMessages();
                     messagesLoaded = true;
                 }
@@ -183,20 +181,21 @@
             const urlParams = new URLSearchParams(window.location.search);
             currentTicketId = urlParams.get('ticket');
             if (currentTicketId) {
-                const ticketRef = doc(db, "tickets", currentTicketId);
-                const ticketSnap = await getDoc(ticketRef);
-                if (ticketSnap.exists()) {
-                    const ticketData = ticketSnap.data();
-                    if (ticketData.participants.includes(currentUser.uid)) {
+                try {
+                    const ticketRef = doc(db, "tickets", currentTicketId);
+                    const ticketSnap = await getDoc(ticketRef);
+                    if (ticketSnap.exists()) {
+                        const ticketData = ticketSnap.data();
                         setTicketTitle(ticketData.title);
-                        //  loadMessages() call removed
+                        isTicketClosed = ticketData.status === "closed";
+                        updateUIForClosedTicket();
                     } else {
-                        alert("You are not a participant of this ticket.");
+                        console.error("Ticket not found");
                         window.location.href = 'tickets.html';
                     }
-                } else {
-                    console.error("Ticket not found");
-                    window.location.href = 'tickets.html';
+                } catch (error) {
+                    console.error("Error loading ticket:", error);
+                    alert("Error loading ticket. Please try again.");
                 }
             }
         }
@@ -208,6 +207,7 @@
             
             onSnapshot(q, (snapshot) => {
                 console.log("Received snapshot, document changes:", snapshot.docChanges().length);
+                const messagesDiv = document.getElementById('messages');
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const message = change.doc.data();
@@ -215,6 +215,7 @@
                         addMessage(message.user, message.text, message.avatar);
                     }
                 });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }, (error) => {
                 console.error("Error fetching messages:", error);
             });
@@ -240,14 +241,12 @@
                     messageInput.value = '';
                 } catch (error) {
                     console.error("Error sending message:", error);
+                    alert("Error sending message. Please try again.");
                 }
             }
         }
 
-        //sendMessage globally accessible
         window.sendMessage = sendMessage;
-
-        let hasConclusion = false;
 
         function addMessage(user, text, avatar) {
             console.log("Adding message to UI:", { user, text, avatar });
@@ -324,6 +323,15 @@
             }
         }
 
+        function updateUIForClosedTicket() {
+            if (isTicketClosed) {
+                document.getElementById('messageInputArea').classList.add('hidden');
+                document.getElementById('ticketClosedMessage').classList.remove('hidden');
+                document.getElementById('closeTicketBtn').classList.add('hidden');
+                document.getElementById('concludeBtn').classList.remove('hidden');
+            }
+        }
+
         document.getElementById('closeTicketBtn').addEventListener('click', closeTicket);
         document.getElementById('concludeBtn').addEventListener('click', concludeTicket);
 
@@ -335,9 +343,10 @@
 
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const ticketName = urlParams.get('ticket');
-            if (ticketName) {
-                setTicketTitle(ticketName);
+            const ticketId = urlParams.get('ticket');
+            if (ticketId) {
+                currentTicketId = ticketId;
+                loadTicket();
             }
         };
     </script>
