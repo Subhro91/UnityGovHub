@@ -25,37 +25,10 @@
             background: #E2E8F0;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #CBD5E0;
-            border-radius: 20px;
+            background: #A0AEC0;
         }
-        .ticket-closed-message {
-            background-color: #f3f4f6;
-            padding: 0.5rem;
-            border-radius: 0.375rem;
-            font-weight: bold;
-            text-align: center;
-            color: #4b5563;
-        }
-        .hidden {
+        .close-button {
             display: none;
-        }
-        @media (max-width: 640px) {
-            .chat-container {
-                height: calc(100vh - 12rem);
-            }
-            .message-container {
-                height: calc(100% - 3rem);
-            }
-            #messages {
-                font-size: 0.875rem;
-            }
-            #messageInput {
-                font-size: 0.875rem;
-            }
-            #sendButton {
-                padding: 0.5rem 1rem;
-                font-size: 0.875rem;
-            }
         }
     </style>
 </head>
@@ -73,7 +46,6 @@
                     <a href="index.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-2 sm:px-3 py-2 rounded-md text-sm font-medium">Home</a>
                     <a href="projects.html" class="text-gray-700 hover:bg-gray-100 hover:text-gray-900 px-2 sm:px-3 py-2 rounded-md text-sm font-medium">Projects</a>
                     <button id="closeTicketBtn" class="bg-red-500 text-white px-2 sm:px-3 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition-colors">Close</button>
-                    <button id="concludeBtn" class="hidden bg-green-500 text-white px-2 sm:px-3 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors">Conclude</button>
                 </div>
             </div>
         </div>
@@ -307,19 +279,7 @@
                 document.getElementById('messageInputArea').classList.add('hidden');
                 document.getElementById('ticketClosedMessage').classList.remove('hidden');
                 document.getElementById('closeTicketBtn').classList.add('hidden');
-                document.getElementById('concludeBtn').classList.remove('hidden');
                 addMessage('System', 'This ticket has been closed.', '🔒');
-            }
-        }
-
-        function concludeTicket() {
-            if (!hasConclusion) {
-                const conclusion = prompt('Please enter your concluding message:');
-                if (conclusion) {
-                    addMessage('Conclusion', conclusion, '📝');
-                    hasConclusion = true;
-                    document.getElementById('concludeBtn').classList.add('hidden');
-                }
             }
         }
 
@@ -328,12 +288,10 @@
                 document.getElementById('messageInputArea').classList.add('hidden');
                 document.getElementById('ticketClosedMessage').classList.remove('hidden');
                 document.getElementById('closeTicketBtn').classList.add('hidden');
-                document.getElementById('concludeBtn').classList.remove('hidden');
             }
         }
 
         document.getElementById('closeTicketBtn').addEventListener('click', closeTicket);
-        document.getElementById('concludeBtn').addEventListener('click', concludeTicket);
 
         document.getElementById('messageInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !isTicketClosed) {
