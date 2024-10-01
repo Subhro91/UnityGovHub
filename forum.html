@@ -135,6 +135,7 @@
         let currentTicketId;
         let isTicketClosed = false;
         let messagesLoaded = false;
+        let isTicketCreator = false;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -158,9 +159,20 @@
                     const ticketSnap = await getDoc(ticketRef);
                     if (ticketSnap.exists()) {
                         const ticketData = ticketSnap.data();
+                        console.log("Full Ticket data:", JSON.stringify(ticketData, null, 2));
                         setTicketTitle(ticketData.title);
                         isTicketClosed = ticketData.status === "closed";
+                        
+                        console.log("Current user UID:", currentUser.uid);
+                        console.log("Ticket creator ID:", ticketData.createdBy);
+                        
+                        // Check only for createdBy
+                        isTicketCreator = currentUser.uid === ticketData.createdBy;
+                        
+                        console.log("isTicketClosed:", isTicketClosed);
+                        console.log("isTicketCreator:", isTicketCreator);
                         updateUIForClosedTicket();
+                        showCloseButtonIfCreator();
                     } else {
                         console.error("Ticket not found");
                         window.location.href = 'tickets.html';
@@ -170,6 +182,10 @@
                     alert("Error loading ticket. Please try again.");
                 }
             }
+        }
+
+        function setTicketTitle(title) {
+            document.getElementById('ticketTitle').textContent = title;
         }
 
         function loadMessages() {
@@ -264,10 +280,6 @@
             updateCountdowns();
         }
 
-        function setTicketTitle(title) {
-            document.getElementById('ticketTitle').textContent = title;
-        }
-
         async function closeTicket() {
             if (confirm('Are you sure you want to close this ticket?')) {
                 const ticketRef = doc(db, "tickets", currentTicketId);
@@ -291,6 +303,16 @@
             }
         }
 
+        function showCloseButtonIfCreator() {
+            const closeButton = document.getElementById('closeTicketBtn');
+            console.log("Checking if close button should be shown. isTicketCreator:", isTicketCreator, "isTicketClosed:", isTicketClosed);
+            if (isTicketCreator && !isTicketClosed) {
+                closeButton.classList.remove('hidden');
+            } else {
+                closeButton.classList.add('hidden');
+            }
+        }
+
         document.getElementById('closeTicketBtn').addEventListener('click', closeTicket);
 
         document.getElementById('messageInput').addEventListener('keypress', function(e) {
@@ -307,32 +329,6 @@
                 loadTicket();
             }
         };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
-    <script>
-        let calendar;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const openCalendarBtn = document.getElementById('openCalendarBtn');
-            const selectedDateInput = document.getElementById('selectedDate');
-
-            calendar = flatpickr(selectedDateInput, {
-                dateFormat: "Y-m-d",
-                static: true,
-                onClose: function(selectedDates, dateStr, instance) {
-                    if (selectedDates.length > 0) {
-                        selectedDateInput.value = dateStr;
-                        document.getElementById('eventName').focus();
-                    }
-                }
-            });
-
-            openCalendarBtn.addEventListener('click', function() {
-                calendar.open();
-            });
-        });
 
         function scheduleEvent() {
             const date = document.getElementById('selectedDate').value;
@@ -359,6 +355,29 @@
         }
 
         setInterval(updateCountdowns, 60000); 
+        window.scheduleEvent = scheduleEvent;  // Add this line
+
+        console.log("Setting up date selection...");
+        const openCalendarBtn = document.getElementById('openCalendarBtn');
+        const hiddenDatePicker = document.getElementById('hiddenDatePicker');
+        const selectedDateInput = document.getElementById('selectedDate');
+
+        if (openCalendarBtn && hiddenDatePicker && selectedDateInput) {
+            console.log("Found all necessary elements, attaching event listeners...");
+            
+            openCalendarBtn.addEventListener('click', function() {
+                console.log("openCalendarBtn clicked");
+                hiddenDatePicker.showPicker();
+            });
+
+            hiddenDatePicker.addEventListener('change', function() {
+                console.log("Date selected:", this.value);
+                selectedDateInput.value = this.value;
+            });
+        } else {
+            console.error("Could not find one or more required elements");
+        }
     </script>
+    <input type="date" id="hiddenDatePicker" class="hidden">
 </body>
 </html>
