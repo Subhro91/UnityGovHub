@@ -168,7 +168,17 @@
                         console.log("Current user UID:", currentUser.uid);
                         console.log("Ticket creator ID:", ticketData.createdBy);
                         
-                        isTicketCreator = currentUser.uid === ticketData.createdBy;
+                        // Check for createdBy, if not present, use the first participant
+                        if (ticketData.createdBy) {
+                            isTicketCreator = currentUser.uid === ticketData.createdBy;
+                        } else if (ticketData.participants && ticketData.participants.length > 0) {
+                            isTicketCreator = currentUser.uid === ticketData.participants[0];
+                            // Update the ticket with the createdBy field
+                            await updateDoc(ticketRef, { createdBy: ticketData.participants[0] });
+                            console.log("Updated ticket with createdBy field:", ticketData.participants[0]);
+                        } else {
+                            isTicketCreator = false;
+                        }
                         
                         console.log("isTicketClosed:", isTicketClosed);
                         console.log("isTicketCreator:", isTicketCreator);
