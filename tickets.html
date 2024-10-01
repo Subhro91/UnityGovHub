@@ -169,6 +169,7 @@
                         title: title,
                         status: "open",
                         participants: [currentUser.uid],
+                        createdBy: currentUser.uid,  // Make sure this line is present
                         createdAt: new Date() 
                     });
                     console.log("Ticket created with ID: ", docRef.id);
