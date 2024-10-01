@@ -117,7 +117,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-        import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+       
 
         const firebaseConfig = {
             apiKey: "AIzaSyD_1KNu8igoG60o-OejxQdEbuqP1gCLSAo",
@@ -246,8 +246,6 @@
             }
         }
 
-        window.sendMessage = sendMessage;
-
         function addMessage(user, text, avatar) {
             console.log("Adding message to UI:", { user, text, avatar });
             const messagesDiv = document.getElementById('messages');
@@ -363,7 +361,6 @@
         }
 
         setInterval(updateCountdowns, 60000); 
-        window.scheduleEvent = scheduleEvent;  // Add this line
 
         console.log("Setting up date selection...");
         const openCalendarBtn = document.getElementById('openCalendarBtn');
@@ -392,6 +389,10 @@
                 unsubscribeTicketListener();
             }
         });
+
+        // Move these lines to the end of the script
+        window.sendMessage = sendMessage;
+        window.scheduleEvent = scheduleEvent;
     </script>
     <input type="date" id="hiddenDatePicker" class="hidden">
 </body>
