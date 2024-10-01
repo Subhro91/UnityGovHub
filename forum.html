@@ -73,10 +73,7 @@
                 <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6">
                     <h2 class="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-gray-800">Schedule Event</h2>
                     <div class="mb-3 sm:mb-4">
-                        <button id="openCalendarBtn" class="w-full bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
-                            <i class="fas fa-calendar-alt mr-1 sm:mr-2"></i>Select Date
-                        </button>
-                        <input type="text" id="selectedDate" class="w-full mt-2 p-2 bg-gray-100 border border-gray-300 text-gray-700 rounded-lg" readonly placeholder="No date selected">
+                        <input type="date" id="selectedDate" class="w-full p-2 bg-white border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
                     </div>
                     <input type="text" id="eventName" class="w-full p-2 mb-3 sm:mb-4 bg-white border border-gray-300 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Event Name">
                     <div class="mb-3 sm:mb-4">
@@ -373,24 +370,15 @@
         setInterval(updateCountdowns, 60000); 
 
         console.log("Setting up date selection...");
-        const openCalendarBtn = document.getElementById('openCalendarBtn');
-        const hiddenDatePicker = document.getElementById('hiddenDatePicker');
         const selectedDateInput = document.getElementById('selectedDate');
 
-        if (openCalendarBtn && hiddenDatePicker && selectedDateInput) {
-            console.log("Found all necessary elements, attaching event listeners...");
+        if (selectedDateInput) {
+            console.log("Found selectedDateInput, setting minimum date...");
             
-            openCalendarBtn.addEventListener('click', function() {
-                console.log("openCalendarBtn clicked");
-                hiddenDatePicker.showPicker();
-            });
-
-            hiddenDatePicker.addEventListener('change', function() {
-                console.log("Date selected:", this.value);
-                selectedDateInput.value = this.value;
-            });
+            // Set the minimum date to today
+            selectedDateInput.min = new Date().toISOString().split('T')[0];
         } else {
-            console.error("Could not find one or more required elements");
+            console.error("Could not find selectedDateInput");
         }
 
         // Clean up the listener when the page is unloaded
@@ -404,6 +392,5 @@
         window.sendMessage = sendMessage;
         window.scheduleEvent = scheduleEvent;
     </script>
-    <input type="date" id="hiddenDatePicker" class="hidden">
 </body>
 </html>
