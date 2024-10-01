@@ -90,6 +90,9 @@
                     <p class="text-xl mb-8">Streamline interdepartmental cooperation with our cutting-edge digital platform</p>
                     <button id="heroAuthButton" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300" style="display: none;">Sign Up / Sign In</button>
                     <button id="heroGetStartedButton" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300" style="display: none;" onclick="window.location.href='department.html'">Get Started</button>
+                    <button id="ticketsButton" onclick="window.location.href='tickets.html'" class="hidden bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-600 font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 mt-4 w-full sm:w-auto">
+                        Tickets
+                    </button>
                     <button id="heroSignOutButton" class="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300" style="display: none;">Sign Out</button>
                     <div id="heroLoadingButton" class="bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold">Loading...</div>
                 </div>
@@ -365,6 +368,74 @@
                   }
               });
           });
+
+          // Check if user is logged in and show/hide Tickets button accordingly
+          firebase.auth().onAuthStateChanged(function(user) {
+              const ticketsButton = document.getElementById('ticketsButton');
+              if (user) {
+                  ticketsButton.classList.remove('hidden');
+              } else {
+                  ticketsButton.classList.add('hidden');
+              }
+          });
+
+          // Check if user is logged in and show/hide Tickets button accordingly
+          firebase.auth().onAuthStateChanged(function(user) {
+              const ticketsButton = document.getElementById('ticketsButton');
+              const getStartedButton = document.querySelector('.bg-indigo-600'); // Assuming this is your "Get Started" button
+              if (user && window.innerWidth < 640) { // 640px is the default breakpoint for 'sm' in Tailwind
+                  ticketsButton.classList.remove('hidden');
+                  getStartedButton.classList.remove('w-full');
+                  getStartedButton.classList.add('w-1/2');
+                  ticketsButton.classList.add('w-1/2');
+              } else {
+                  ticketsButton.classList.add('hidden');
+                  getStartedButton.classList.add('w-full');
+                  getStartedButton.classList.remove('w-1/2');
+              }
+          });
+
+          // Add event listener for window resize
+          window.addEventListener('resize', function() {
+              const user = firebase.auth().currentUser;
+              const ticketsButton = document.getElementById('ticketsButton');
+              const getStartedButton = document.querySelector('.bg-indigo-600');
+              if (user && window.innerWidth < 640) {
+                  ticketsButton.classList.remove('hidden');
+                  getStartedButton.classList.remove('w-full');
+                  getStartedButton.classList.add('w-1/2');
+                  ticketsButton.classList.add('w-1/2');
+              } else {
+                  ticketsButton.classList.add('hidden');
+                  getStartedButton.classList.add('w-full');
+                  getStartedButton.classList.remove('w-1/2');
+              }
+          });
+
+          function updateButtonsLayout() {
+              const user = firebase.auth().currentUser;
+              const ticketsButton = document.getElementById('ticketsButton');
+              const getStartedButton = document.querySelector('.bg-indigo-600'); // Assuming this is your "Get Started" button
+              
+              if (user && window.innerWidth < 640) { // 640px is the default breakpoint for 'sm' in Tailwind
+                  ticketsButton.classList.remove('hidden');
+                  ticketsButton.style.width = getStartedButton.offsetWidth + 'px';
+                  ticketsButton.style.height = getStartedButton.offsetHeight + 'px';
+              } else {
+                  ticketsButton.classList.add('hidden');
+              }
+          }
+
+          // Check if user is logged in and update buttons layout
+          firebase.auth().onAuthStateChanged(function(user) {
+              updateButtonsLayout();
+          });
+
+          // Add event listener for window resize
+          window.addEventListener('resize', updateButtonsLayout);
+
+          // Initial call to set up the layout
+          updateButtonsLayout();
           </script>
           </body>
           </html>
